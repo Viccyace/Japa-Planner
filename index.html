@@ -1474,7 +1474,7 @@
     <a href="#">Blog</a>
   </div>
   <hr class="footer-divider">
-  <p>© 2025 JapaPlanner. All rights reserved. Not affiliated with any government or embassy.</p>
+  <p>© <span id="footerYear"></span> JapaPlanner. All rights reserved. Not affiliated with any government or embassy.</p>
 </footer>
 
 <!-- ===== APP MODAL ===== -->
@@ -1489,45 +1489,83 @@
         <p style="color:var(--muted); font-size:0.9rem;">Your Naira-to-departure budget companion</p>
       </div>
 
+      <!-- Auth tabs -->
       <div style="display:flex; gap:8px; background:var(--border); border-radius:12px; padding:4px; margin-bottom:24px;">
         <button id="signupTab" onclick="switchAuth('signup')" style="flex:1; padding:10px; border:none; border-radius:8px; background:var(--green); color:white; font-weight:600; cursor:pointer; font-size:0.9rem;">Create Free Account</button>
         <button id="loginTab" onclick="switchAuth('login')" style="flex:1; padding:10px; border:none; border-radius:8px; background:transparent; color:var(--muted); font-weight:600; cursor:pointer; font-size:0.9rem;">Log In</button>
       </div>
 
+      <!-- Error / success banner -->
+      <div id="authBanner" style="display:none; padding:12px 16px; border-radius:10px; font-size:0.85rem; margin-bottom:16px; font-weight:500;"></div>
+
+      <!-- SIGNUP FORM -->
       <div id="signupForm">
         <div class="form-grid" style="margin-bottom:16px;">
           <div class="form-group">
             <label>Full Name</label>
-            <input type="text" id="userName" placeholder="e.g. Adaeze Okonkwo">
+            <input type="text" id="userName" placeholder="e.g. Adaeze Okonkwo" autocomplete="name">
           </div>
           <div class="form-group">
             <label>Email Address</label>
-            <input type="email" id="userEmail" placeholder="you@email.com">
+            <input type="email" id="signupEmail" placeholder="you@email.com" autocomplete="email">
           </div>
         </div>
-        <div class="form-group" style="margin-bottom:20px;">
+        <div class="form-group" style="margin-bottom:8px;">
           <label>Password</label>
-          <input type="password" id="userPass" placeholder="Create a password">
+          <div style="position:relative;">
+            <input type="password" id="signupPass" placeholder="Min. 8 characters" autocomplete="new-password" style="width:100%; padding-right:44px;">
+            <button type="button" onclick="togglePass('signupPass',this)" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted);font-size:1rem;">👁</button>
+          </div>
         </div>
-        <button onclick="startApp()" class="btn-primary" style="width:100%; justify-content:center; border-radius:12px; font-size:1rem;">
-          Start Planning Free 🚀
+        <p style="font-size:0.75rem; color:var(--muted); margin-bottom:20px;">Use at least 8 characters with a number or symbol</p>
+        <button id="signupBtn" onclick="handleSignup()" class="btn-primary" style="width:100%; justify-content:center; border-radius:12px; font-size:1rem;">
+          <span id="signupBtnText">Start Planning Free 🚀</span>
         </button>
         <p style="text-align:center; font-size:0.78rem; color:var(--muted); margin-top:12px;">No credit card required • Free forever plan</p>
       </div>
 
+      <!-- LOGIN FORM -->
       <div id="loginForm" style="display:none;">
         <div class="form-group" style="margin-bottom:16px;">
           <label>Email Address</label>
-          <input type="email" placeholder="you@email.com">
+          <input type="email" id="loginEmail" placeholder="you@email.com" autocomplete="email">
         </div>
-        <div class="form-group" style="margin-bottom:20px;">
+        <div class="form-group" style="margin-bottom:8px;">
           <label>Password</label>
-          <input type="password" placeholder="Your password">
+          <div style="position:relative;">
+            <input type="password" id="loginPass" placeholder="Your password" autocomplete="current-password" style="width:100%; padding-right:44px;">
+            <button type="button" onclick="togglePass('loginPass',this)" style="position:absolute;right:12px;top:50%;transform:translateY(-50%);background:none;border:none;cursor:pointer;color:var(--muted);font-size:1rem;">👁</button>
+          </div>
         </div>
-        <button onclick="startApp()" class="btn-primary" style="width:100%; justify-content:center; border-radius:12px; font-size:1rem;">
-          Log In to JapaPlanner
+        <div style="text-align:right; margin-bottom:20px;">
+          <button onclick="handleForgotPassword()" style="background:none;border:none;color:var(--green);font-size:0.82rem;cursor:pointer;font-weight:600;">Forgot password?</button>
+        </div>
+        <button id="loginBtn" onclick="handleLogin()" class="btn-primary" style="width:100%; justify-content:center; border-radius:12px; font-size:1rem;">
+          <span id="loginBtnText">Log In to JapaPlanner</span>
         </button>
       </div>
+
+      <!-- FORGOT PASSWORD FORM -->
+      <div id="forgotForm" style="display:none;">
+        <p style="font-size:0.88rem; color:var(--muted); margin-bottom:16px;">Enter your email and we'll send you a reset link.</p>
+        <div class="form-group" style="margin-bottom:20px;">
+          <label>Email Address</label>
+          <input type="email" id="forgotEmail" placeholder="you@email.com" autocomplete="email">
+        </div>
+        <button id="forgotBtn" onclick="handleForgotPassword()" class="btn-primary" style="width:100%; justify-content:center; border-radius:12px; font-size:1rem;">
+          <span id="forgotBtnText">Send Reset Link</span>
+        </button>
+        <button onclick="showForgot(false)" style="width:100%;margin-top:10px;background:none;border:none;color:var(--muted);font-size:0.85rem;cursor:pointer;">← Back to Log In</button>
+      </div>
+
+      <!-- EMAIL VERIFICATION NOTICE -->
+      <div id="verifyNotice" style="display:none; text-align:center; padding:20px 0;">
+        <div style="font-size:3rem; margin-bottom:12px;">📧</div>
+        <h3 style="font-family:'Fraunces',serif; font-size:1.2rem; color:var(--dark); margin-bottom:8px;">Check your email!</h3>
+        <p style="font-size:0.88rem; color:var(--muted); line-height:1.7; margin-bottom:20px;">We sent a verification link to <strong id="verifyEmail"></strong>. Click it to activate your account, then log in here.</p>
+        <button onclick="switchAuth('login')" class="btn-primary" style="justify-content:center; border-radius:12px;">Go to Log In</button>
+      </div>
+
     </div>
 
     <!-- APP DASHBOARD -->
@@ -1538,8 +1576,9 @@
           <p>Your Japa plan is in progress</p>
         </div>
         <div style="display:flex; gap:8px; align-items:center;">
-          <span class="badge-free-feature">Free Plan</span>
+          <span class="badge-free-feature" id="planBadge">Free Plan</span>
           <button onclick="showUpgrade()" style="padding:8px 16px; background:var(--gold); color:white; border:none; border-radius:50px; font-size:0.8rem; font-weight:700; cursor:pointer;">⭐ Upgrade</button>
+          <button onclick="handleLogout()" title="Log out" style="padding:8px 12px; background:white; color:var(--muted); border:1px solid var(--border); border-radius:50px; font-size:0.8rem; cursor:pointer; transition:all 0.2s;" onmouseover="this.style.color='var(--green)'" onmouseout="this.style.color='var(--muted)'">↩ Logout</button>
         </div>
       </div>
 
@@ -1881,15 +1920,226 @@
     "Statement of Purpose (draft)",
   ];
 
+  // ============================================================
+  // SUPABASE AUTH INTEGRATION
+  // ------------------------------------------------------------
+  // 1. Go to https://supabase.com → create a free project
+  // 2. Go to Project Settings → API
+  // 3. Copy your Project URL and anon/public key below
+  // 4. In Supabase → Authentication → Email, enable "Confirm email"
+  // ============================================================
+  const SUPABASE_URL  = 'https://wnrasktmfrvtbdazhmbu.supabase.co';
+  const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InducmFza3RtZnJ2dGJkYXpobWJ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI3MTE3MDIsImV4cCI6MjA4ODI4NzcwMn0.Yt6ZWbXSxL8GJq_U5xFpHn0XPEOr93Q85InQhFxhDL8';
+
+  // Load Supabase SDK dynamically
+  let supabase = null;
+  const sbConfigured = SUPABASE_URL !== 'YOUR_SUPABASE_URL' && SUPABASE_ANON !== 'YOUR_SUPABASE_ANON_KEY';
+
+  async function loadSupabase() {
+    if (supabase || !sbConfigured) return;
+    await new Promise((res, rej) => {
+      const s = document.createElement('script');
+      s.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js';
+      s.onload = res; s.onerror = rej;
+      document.head.appendChild(s);
+    });
+    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+  }
+
+  // Auto-update footer year
+  document.getElementById('footerYear').textContent = new Date().getFullYear();
+  window.addEventListener('DOMContentLoaded', async () => {
+    if (!sbConfigured) return;
+    await loadSupabase();
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session?.user) {
+      currentUser = session.user;
+      isLoggedIn = true;
+    }
+    // Listen for auth state changes (e.g. email link confirmation)
+    supabase.auth.onAuthStateChange((_event, session) => {
+      if (session?.user && !isLoggedIn) {
+        currentUser = session.user;
+        isLoggedIn = true;
+      }
+    });
+  });
+
+  let currentUser = null;
+  let selectedPlan = 'monthly';
+  let isLoggedIn = false;
   let userBudgets = {};
   let checkedTasks = {};
   let checkedDocs = {};
-  let selectedPlan = 'monthly';
-  let isLoggedIn = false;
+
+  // ===== HELPERS =====
+  function showBanner(msg, type = 'error') {
+    const b = document.getElementById('authBanner');
+    b.style.display = 'block';
+    b.style.background = type === 'error' ? '#FFF5F5' : '#F0FFF4';
+    b.style.color = type === 'error' ? '#C53030' : '#276749';
+    b.style.border = `1px solid ${type === 'error' ? '#FEB2B2' : '#9AE6B4'}`;
+    b.textContent = msg;
+  }
+  function hideBanner() { document.getElementById('authBanner').style.display = 'none'; }
+
+  function setLoading(btnId, textId, loading, defaultText) {
+    const btn = document.getElementById(btnId);
+    const txt = document.getElementById(textId);
+    btn.disabled = loading;
+    btn.style.opacity = loading ? '0.7' : '1';
+    txt.textContent = loading ? 'Please wait...' : defaultText;
+  }
+
+  function togglePass(inputId, btn) {
+    const input = document.getElementById(inputId);
+    input.type = input.type === 'password' ? 'text' : 'password';
+    btn.textContent = input.type === 'password' ? '👁' : '🙈';
+  }
+
+  function showForgot(show) {
+    document.getElementById('loginForm').style.display = show ? 'none' : 'block';
+    document.getElementById('forgotForm').style.display = show ? 'block' : 'none';
+    hideBanner();
+  }
+
+  // ===== SIGN UP =====
+  async function handleSignup() {
+    hideBanner();
+    const name  = document.getElementById('userName').value.trim();
+    const email = document.getElementById('signupEmail').value.trim();
+    const pass  = document.getElementById('signupPass').value;
+
+    if (!name)  return showBanner('Please enter your full name.');
+    if (!email) return showBanner('Please enter your email address.');
+    if (pass.length < 8) return showBanner('Password must be at least 8 characters.');
+
+    if (!sbConfigured) { demoLogin(name); return; }
+
+    setLoading('signupBtn', 'signupBtnText', true, 'Start Planning Free 🚀');
+    await loadSupabase();
+
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password: pass,
+      options: { data: { full_name: name } }
+    });
+
+    setLoading('signupBtn', 'signupBtnText', false, 'Start Planning Free 🚀');
+
+    if (error) return showBanner(friendlyError(error.message));
+
+    // If email confirmation is required
+    if (data.user && !data.session) {
+      document.getElementById('signupForm').style.display = 'none';
+      document.getElementById('verifyEmail').textContent = email;
+      document.getElementById('verifyNotice').style.display = 'block';
+      return;
+    }
+
+    // Auto-confirmed (email confirmation disabled in Supabase)
+    if (data.session) {
+      currentUser = data.user;
+      isLoggedIn = true;
+      launchDashboard(name);
+    }
+  }
+
+  // ===== LOG IN =====
+  async function handleLogin() {
+    hideBanner();
+    const email = document.getElementById('loginEmail').value.trim();
+    const pass  = document.getElementById('loginPass').value;
+
+    if (!email) return showBanner('Please enter your email address.');
+    if (!pass)  return showBanner('Please enter your password.');
+
+    if (!sbConfigured) {
+      demoLogin(email.split('@')[0]);
+      return;
+    }
+
+    setLoading('loginBtn', 'loginBtnText', true, 'Log In to JapaPlanner');
+    await loadSupabase();
+
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password: pass });
+
+    setLoading('loginBtn', 'loginBtnText', false, 'Log In to JapaPlanner');
+
+    if (error) return showBanner(friendlyError(error.message));
+
+    currentUser = data.user;
+    isLoggedIn = true;
+    const name = data.user.user_metadata?.full_name?.split(' ')[0] || email.split('@')[0];
+    launchDashboard(name);
+  }
+
+  // ===== FORGOT PASSWORD =====
+  async function handleForgotPassword() {
+    hideBanner();
+    const email = document.getElementById('forgotEmail').value.trim();
+    if (!email) return showBanner('Please enter your email address.');
+
+    if (!sbConfigured) {
+      showBanner('Reset email sent! (Demo mode — no real email sent)', 'success');
+      return;
+    }
+
+    setLoading('forgotBtn', 'forgotBtnText', true, 'Send Reset Link');
+    await loadSupabase();
+
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: window.location.href
+    });
+
+    setLoading('forgotBtn', 'forgotBtnText', false, 'Send Reset Link');
+
+    if (error) return showBanner(friendlyError(error.message));
+    showBanner('✅ Reset link sent! Check your inbox.', 'success');
+  }
+
+  // ===== LOG OUT =====
+  async function handleLogout() {
+    if (sbConfigured && supabase) await supabase.auth.signOut();
+    currentUser = null;
+    isLoggedIn = false;
+    userBudgets = {}; checkedTasks = {}; checkedDocs = {};
+    document.getElementById('appDashboard').style.display = 'none';
+    document.getElementById('authScreen').style.display = 'block';
+    document.getElementById('upgradeScreen').style.display = 'none';
+    switchAuth('login');
+    hideBanner();
+  }
+
+  // ===== DEMO LOGIN (no Supabase keys) =====
+  function demoLogin(name) {
+    isLoggedIn = true;
+    launchDashboard(name || 'Traveller');
+  }
+
+  // ===== LAUNCH DASHBOARD =====
+  function launchDashboard(name) {
+    document.getElementById('displayName').textContent = name || 'Traveller';
+    document.getElementById('authScreen').style.display = 'none';
+    document.getElementById('appDashboard').style.display = 'block';
+    document.getElementById('upgradeScreen').style.display = 'none';
+    initApp();
+  }
+
+  // ===== FRIENDLY ERROR MESSAGES =====
+  function friendlyError(msg) {
+    if (msg.includes('Invalid login')) return '❌ Incorrect email or password. Please try again.';
+    if (msg.includes('already registered')) return '⚠️ This email is already registered. Try logging in instead.';
+    if (msg.includes('Email not confirmed')) return '📧 Please verify your email first. Check your inbox.';
+    if (msg.includes('rate limit')) return '⏳ Too many attempts. Please wait a moment and try again.';
+    if (msg.includes('weak password')) return '🔒 Password is too weak. Use at least 8 characters with a number.';
+    return '⚠️ ' + msg;
+  }
 
   // ===== APP OPEN/CLOSE =====
   function openApp(mode) {
     document.getElementById('appModal').classList.add('active');
+    document.body.style.overflow = 'hidden';
     if (isLoggedIn) {
       document.getElementById('authScreen').style.display = 'none';
       document.getElementById('appDashboard').style.display = 'block';
@@ -1898,10 +2148,10 @@
       document.getElementById('authScreen').style.display = 'block';
       document.getElementById('appDashboard').style.display = 'none';
       document.getElementById('upgradeScreen').style.display = 'none';
+      hideBanner();
       if (mode === 'login') switchAuth('login');
       else switchAuth('signup');
     }
-    document.body.style.overflow = 'hidden';
   }
 
   function closeApp() {
@@ -1913,31 +2163,26 @@
     if (e.target === this) closeApp();
   });
 
-  // ===== AUTH =====
+  // ===== AUTH TAB SWITCH =====
   function switchAuth(mode) {
     const sf = document.getElementById('signupForm');
     const lf = document.getElementById('loginForm');
+    const ff = document.getElementById('forgotForm');
+    const vn = document.getElementById('verifyNotice');
     const st = document.getElementById('signupTab');
     const lt = document.getElementById('loginTab');
+    hideBanner();
+    sf.style.display = 'none'; lf.style.display = 'none';
+    ff.style.display = 'none'; vn.style.display = 'none';
     if (mode === 'signup') {
-      sf.style.display = 'block'; lf.style.display = 'none';
+      sf.style.display = 'block';
       st.style.background = 'var(--green)'; st.style.color = 'white';
       lt.style.background = 'transparent'; lt.style.color = 'var(--muted)';
     } else {
-      sf.style.display = 'none'; lf.style.display = 'block';
+      lf.style.display = 'block';
       lt.style.background = 'var(--green)'; lt.style.color = 'white';
       st.style.background = 'transparent'; st.style.color = 'var(--muted)';
     }
-  }
-
-  function startApp() {
-    const nameEl = document.getElementById('userName');
-    const name = nameEl ? nameEl.value.split(' ')[0] || 'Traveller' : 'Traveller';
-    isLoggedIn = true;
-    document.getElementById('displayName').textContent = name || 'Traveller';
-    document.getElementById('authScreen').style.display = 'none';
-    document.getElementById('appDashboard').style.display = 'block';
-    initApp();
   }
 
   // ===== TABS =====
