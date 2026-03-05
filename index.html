@@ -52,9 +52,10 @@
     background: rgba(250,247,242,0.92);
     backdrop-filter: blur(12px);
     border-bottom: 1px solid var(--border);
-    padding: 0 24px;
+    padding: 0 20px;
     height: 64px;
     display: flex; align-items: center; justify-content: space-between;
+    gap: 8px;
   }
   .nav-logo {
     font-family: 'Fraunces', serif;
@@ -63,9 +64,10 @@
     color: var(--green);
     display: flex; align-items: center; gap: 8px;
     text-decoration: none;
+    flex-shrink: 0;
   }
   .nav-logo span { color: var(--gold); }
-  .nav-actions { display: flex; gap: 10px; align-items: center; }
+  .nav-actions { display: flex; gap: 8px; align-items: center; flex-shrink: 0; }
   .btn-nav-login {
     padding: 8px 18px;
     border: 1.5px solid var(--green);
@@ -88,8 +90,16 @@
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s;
+    white-space: nowrap;
   }
   .btn-nav-cta:hover { background: var(--green-mid); transform: translateY(-1px); }
+
+  @media (max-width: 480px) {
+    nav { padding: 0 16px; }
+    .nav-logo { font-size: 1.15rem; }
+    .btn-nav-login { display: none; }
+    .btn-nav-cta { padding: 8px 16px; font-size: 0.82rem; }
+  }
 
   /* ===== HERO ===== */
   .hero {
@@ -374,59 +384,6 @@
   .step-card p { font-size: 0.875rem; color: var(--muted); line-height: 1.6; }
 
   /* ===== FEATURES ===== */
-  .features-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-    gap: 24px;
-    margin-top: 48px;
-  }
-  .feature-card {
-    padding: 28px;
-    border-radius: var(--radius);
-    background: white;
-    border: 1px solid var(--border);
-    transition: all 0.3s;
-  }
-  .feature-card:hover { border-color: rgba(11,94,62,0.2); box-shadow: var(--shadow); transform: translateY(-3px); }
-  .feature-card.premium {
-    background: linear-gradient(135deg, var(--green) 0%, #0d4f34 100%);
-    color: white;
-    border: none;
-  }
-  .feature-icon {
-    font-size: 1.8rem;
-    margin-bottom: 14px;
-    display: block;
-  }
-  .feature-card h3 {
-    font-family: 'Fraunces', serif;
-    font-size: 1.05rem;
-    font-weight: 600;
-    margin-bottom: 8px;
-    color: var(--dark);
-  }
-  .feature-card.premium h3 { color: white; }
-  .feature-card p { font-size: 0.875rem; color: var(--muted); line-height: 1.6; }
-  .feature-card.premium p { color: rgba(255,255,255,0.75); }
-  .feature-tag {
-    display: inline-block;
-    font-size: 0.7rem;
-    font-weight: 700;
-    letter-spacing: 0.05em;
-    text-transform: uppercase;
-    padding: 3px 10px;
-    border-radius: 50px;
-    margin-bottom: 14px;
-  }
-  .tag-free { background: var(--green-light); color: var(--green); }
-  .tag-premium { background: rgba(201,147,58,0.2); color: var(--gold); }
-
-  /* ===== APP PREVIEW ===== */
-  .app-section { background: var(--dark); color: white; }
-  .app-section .section-title { color: white; }
-  .app-section .section-sub { color: rgba(255,255,255,0.6); }
-  .app-section .section-tag { color: var(--gold); }
-
   /* ===== PRICING ===== */
   .pricing-grid {
     display: grid;
@@ -1089,6 +1046,45 @@
     z-index: 50;
     margin-bottom: 6px;
   }
+  /* ===== ILLUSTRATION ROW ===== */
+  .illus-row {
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    gap: 40px;
+    flex-wrap: nowrap;
+  }
+  .illus-arrow {
+    font-size: 2.5rem;
+    color: var(--green);
+    padding-bottom: 60px;
+    flex-shrink: 0;
+    line-height: 1;
+  }
+  .illus-caption {
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-top: 8px;
+    font-style: italic;
+  }
+
+  @media (max-width: 640px) {
+    .illus-row {
+      flex-direction: column;
+      align-items: center;
+      gap: 0;
+    }
+    .illus-arrow {
+      font-size: 2rem;
+      padding: 0;
+      margin: 16px 0;
+      transform: rotate(90deg);
+    }
+    .illus-caption {
+      margin-top: 8px;
+      margin-bottom: 16px;
+    }
+  }
 </style>
 </head>
 <body>
@@ -1186,7 +1182,7 @@
     <p class="section-sub" style="margin: 0 auto 48px;">Most Nigerians planning to Japa underbudget by ₦5M or more. JapaPlanner shows you exactly what you need — before you start spending.</p>
 
     <!-- Custom SVG Illustration -->
-    <div style="display:flex; justify-content:center; gap:40px; flex-wrap:wrap; align-items:flex-end;">
+    <div class="illus-row">
 
       <!-- Person 1: Confused -->
       <div style="text-align:center; max-width:180px;">
@@ -1220,13 +1216,13 @@
           <rect x="62" y="170" width="14" height="28" rx="7" fill="#2D1B00"/>
           <rect x="84" y="170" width="14" height="28" rx="7" fill="#2D1B00"/>
         </svg>
-        <div style="font-size:0.85rem; color:var(--muted); margin-top:8px; font-style:italic;">"How much does Japa actually cost?!"</div>
+        <div class="illus-caption">"How much does Japa actually cost?!"</div>
       </div>
 
-      <!-- Arrow -->
-      <div style="font-size:2.5rem; color:var(--green); padding-bottom:60px;">→</div>
+      <!-- Arrow 1 -->
+      <div class="illus-arrow">→</div>
 
-      <!-- JapaPlanner Logo/App -->
+      <!-- JapaPlanner App (middle) -->
       <div style="display:flex; flex-direction:column; align-items:center; padding-bottom:40px;">
         <div style="background: linear-gradient(135deg, var(--green), #0d4f34); border-radius:20px; padding:20px; box-shadow: 0 12px 40px rgba(11,94,62,0.25); margin-bottom:12px;">
           <div style="font-family:'Fraunces',serif; font-size:1.1rem; color:white; font-weight:700; text-align:center; margin-bottom:6px;">JapaPlanner ✈️</div>
@@ -1239,8 +1235,8 @@
         <div style="font-size:0.78rem; color:var(--green); font-weight:700; background:var(--green-light); padding:4px 12px; border-radius:50px;">Your Planner</div>
       </div>
 
-      <!-- Arrow -->
-      <div style="font-size:2.5rem; color:var(--green); padding-bottom:60px;">→</div>
+      <!-- Arrow 2 -->
+      <div class="illus-arrow">→</div>
 
       <!-- Person 2: Happy/Confident -->
       <div style="text-align:center; max-width:180px;">
@@ -1314,72 +1310,6 @@
         <div class="step-num">04</div>
         <h3>Track Every Milestone</h3>
         <p>Follow your phase-by-phase checklist — from IELTS registration to visa approval to departure day.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- FEATURES -->
-<section>
-  <div class="section-inner">
-    <div class="section-tag">Features</div>
-    <h2 class="section-title">Everything You Need to <em style="font-style:italic; color:var(--green)">Plan & Succeed</em></h2>
-    <p class="section-sub">Free features to get started, premium features to fully take control of your Japa journey.</p>
-
-    <div class="features-grid" style="margin-top:48px;">
-      <div class="feature-card fade-in">
-        <span class="feature-tag tag-free">Free</span>
-        <span class="feature-icon">🗺️</span>
-        <h3>Country Route Setup</h3>
-        <p>Choose your destination country and get pre-filled cost estimates for your specific Japa route.</p>
-      </div>
-      <div class="feature-card fade-in">
-        <span class="feature-tag tag-free">Free</span>
-        <span class="feature-icon">🧮</span>
-        <h3>Basic Cost Calculator</h3>
-        <p>See your top 5 major costs — visa, one year tuition, flight, accommodation deposit, and IELTS.</p>
-      </div>
-      <div class="feature-card fade-in">
-        <span class="feature-tag tag-free">Free</span>
-        <span class="feature-icon">📋</span>
-        <h3>Starter Checklist</h3>
-        <p>Phase 1 document and task checklist — gather your certificates, transcripts, and start applications.</p>
-      </div>
-      <div class="feature-card fade-in">
-        <span class="feature-tag tag-premium">Premium</span>
-        <span class="feature-icon">💱</span>
-        <h3>Live Currency Converter</h3>
-        <p>Track all your costs in both Naira and your target currency with exchange rate buffer protection.</p>
-      </div>
-      <div class="feature-card premium fade-in">
-        <span class="feature-tag" style="background:rgba(201,147,58,0.3); color:var(--gold);">Premium ⭐</span>
-        <span class="feature-icon">📊</span>
-        <h3>Full Savings Dashboard</h3>
-        <p>Visual progress charts, monthly countdown, shortfall alerts, and funding source tracker — all in one beautiful dashboard.</p>
-      </div>
-      <div class="feature-card fade-in">
-        <span class="feature-tag tag-premium">Premium</span>
-        <span class="feature-icon">🗓️</span>
-        <h3>Complete 5-Phase Timeline</h3>
-        <p>All phases from decision to landing abroad — with deadlines, task checklists, and milestone tracking.</p>
-      </div>
-      <div class="feature-card fade-in">
-        <span class="feature-tag tag-premium">Premium</span>
-        <span class="feature-icon">🏦</span>
-        <h3>Funding Sources Tracker</h3>
-        <p>Track money from personal savings, family support, loans, scholarships, and asset sales in one place.</p>
-      </div>
-      <div class="feature-card fade-in">
-        <span class="feature-tag tag-premium">Premium</span>
-        <span class="feature-icon">🌐</span>
-        <h3>5 Country Routes</h3>
-        <p>Detailed cost breakdowns for UK, Canada, USA, Germany, and Australia — with official visa fees updated regularly.</p>
-      </div>
-      <div class="feature-card fade-in">
-        <span class="feature-tag tag-premium">Premium</span>
-        <span class="feature-icon">📄</span>
-        <h3>Export as PDF</h3>
-        <p>Download your complete Japa budget plan as a beautifully formatted PDF to share with family or bank.</p>
       </div>
     </div>
   </div>
