@@ -1932,18 +1932,22 @@
   const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InducmFza3RtZnJ2dGJkYXpobWJ1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzI3MTE3MDIsImV4cCI6MjA4ODI4NzcwMn0.Yt6ZWbXSxL8GJq_U5xFpHn0XPEOr93Q85InQhFxhDL8';
 
   // Load Supabase SDK dynamically
-  let supabase = null;
+  let sbClient = null;
   const sbConfigured = SUPABASE_URL !== 'YOUR_SUPABASE_URL' && SUPABASE_ANON !== 'YOUR_SUPABASE_ANON_KEY';
 
   async function loadSupabase() {
-    if (supabase || !sbConfigured) return;
-    await new Promise((res, rej) => {
-      const s = document.createElement('script');
-      s.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js';
-      s.onload = res; s.onerror = rej;
-      document.head.appendChild(s);
-    });
-    supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
+    if (sbClient) return; // already initialised
+    if (!sbConfigured) return;
+    if (!window._supabaseLib) {
+      await new Promise((res, rej) => {
+        const s = document.createElement('script');
+        s.src = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js';
+        s.onload = () => { window._supabaseLib = true; res(); };
+        s.onerror = rej;
+        document.head.appendChild(s);
+      });
+    }
+    sbClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON);
   }
 
   // Auto-update footer year
@@ -1951,13 +1955,13 @@
   window.addEventListener('DOMContentLoaded', async () => {
     if (!sbConfigured) return;
     await loadSupabase();
-    const { data: { session } } = await supabase.auth.getSession();
+    if (!sbClient) return;
+    const { data: { session } } = await sbClient.auth.getSession();
     if (session?.user) {
       currentUser = session.user;
       isLoggedIn = true;
     }
-    // Listen for auth state changes (e.g. email link confirmation)
-    supabase.auth.onAuthStateChange((_event, session) => {
+    sbClient.auth.onAuthStateChange((_event, session) => {
       if (session?.user && !isLoggedIn) {
         currentUser = session.user;
         isLoggedIn = true;
@@ -2019,7 +2023,7 @@
     setLoading('signupBtn', 'signupBtnText', true, 'Start Planning Free 🚀');
     await loadSupabase();
 
-    const { data, error } = await supabase.auth.signUp({
+    const { data, error } = await sbClient.auth.signUp({
       email,
       password: pass,
       options: { data: { full_name: name } }
@@ -2062,7 +2066,7 @@
     setLoading('loginBtn', 'loginBtnText', true, 'Log In to JapaPlanner');
     await loadSupabase();
 
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password: pass });
+    const { data, error } = await sbClient.auth.signInWithPassword({ email, password: pass });
 
     setLoading('loginBtn', 'loginBtnText', false, 'Log In to JapaPlanner');
 
@@ -2088,7 +2092,7 @@
     setLoading('forgotBtn', 'forgotBtnText', true, 'Send Reset Link');
     await loadSupabase();
 
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+    const { error } = await sbClient.auth.resetPasswordForEmail(email, {
       redirectTo: window.location.href
     });
 
@@ -2100,7 +2104,7 @@
 
   // ===== LOG OUT =====
   async function handleLogout() {
-    if (sbConfigured && supabase) await supabase.auth.signOut();
+    if (sbConfigured && sbClient) await sbClient.auth.signOut();
     currentUser = null;
     isLoggedIn = false;
     userBudgets = {}; checkedTasks = {}; checkedDocs = {};
